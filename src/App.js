@@ -1,18 +1,38 @@
-import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route,
+  Link,
+  Outlet,
+} from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import AuthPage from "./pages/AuthPage";
-import NotFound from "./pages/NotFound";
-import React from "react";
-import Layout from "./components/Layout";
+import HeaderNavBar from "./components/HeaderNavBar";
+import "./App.css";
+
+const AppLayout = () => {
+  return (
+    <>
+      <HeaderNavBar />
+      <Outlet />
+    </>
+  );
+};
 
 const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <AppLayout />,
     children: [
-      { path: "/", element: <MainPage /> },
-      { path: "/auth", element: <AuthPage /> },
-      { path: "*", element: <NotFound /> },
+      {
+        path: "/",
+        element: <MainPage />,
+      },
+      {
+        path: "auth",
+        element: <AuthPage />,
+      },
     ],
   },
 ]);
