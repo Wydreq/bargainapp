@@ -1,31 +1,88 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import classes from "./AuthPage.module.css";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+
+  const changeModeHandler = () => {
+    setIsLogin(!isLogin);
+  };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    setIsLogin(!isLogin);
+    const enteredEmail = emailInputRef.current.value;
+    const enteredPassword = passwordInputRef.current.value;
+
+    let url;
+    if (isLogin) {
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCEHAJzOBZlQOR3oGthLf_PT2q7fgPlsy0";
+    } else {
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCEHAJzOBZlQOR3oGthLf_PT2q7fgPlsy0";
+    }
+
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      setIsLoading(false);
+      if (res.ok) {
+        return res.json();
+      } else {
+        res.json().then((data) => {
+          let errorMessage = "Authentication failed!";
+          throw new Error(errorMessage);
+        });
+      }
+    });
   };
 
   return (
     <div className={classes.authContainer}>
       <form onSubmit={submitHandler} className={classes.authForm}>
         <h1>{isLogin ? "Sign In" : "Sign Up"}</h1>
-        <label for="username" className={classes.label}>
-          Username
+        <label for="E-mail" className={classes.label}>
+          E-mail
         </label>
-        <input type="text" name="username" className={classes.input} />
+        <input
+          type="email"
+          name="E-mail"
+          className={classes.input}
+          required
+          ref={emailInputRef}
+        />
         <label for="password" className={classes.label}>
           Password
         </label>
-        <input type="password" name="password" className={classes.input} />
+        <input
+          type="password"
+          name="password"
+          className={classes.input}
+          required
+          ref={passwordInputRef}
+        />
         <input
           type="submit"
           value={isLogin ? "Sign In" : "Sign Up"}
           className={classes.submit}
         />
+        <button className={classes.changeBtn} onClick={changeModeHandler}>
+          {isLogin
+            ? "You dont have an account? Sign Up!"
+            : "You already have an account? Sign In"}
+        </button>
       </form>
     </div>
   );

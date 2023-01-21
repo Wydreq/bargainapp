@@ -12,7 +12,8 @@
   display: flex;
   flex-direction: column;
   margin-top: 20px;
-  padding: 100px;
+  padding: 50px 100px 30px 100px;
+
   background-color: orange;
   border-radius: 35px;
   color: white;
@@ -54,4 +55,17 @@
   background-color: white;
   color: orange;
   transition: 0.3s;
+}
+
+.changeBtn {
+  background-color: orange;
+  border: none;
+  color: white;
+  font-size: 15px;
+  margin-top: 30px;
+  text-decoration: underline;
+}
+
+.changeBtn:hover {
+  color: black;
 }
