@@ -40,7 +40,10 @@
 }
 
 .submit {
-  width: 33%;
+  min-width: 33%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 50px;
   margin-top: 15px;
   background-color: orange;

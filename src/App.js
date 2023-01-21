@@ -4,9 +4,12 @@ import {
   createBrowserRouter,
   RouterProvider,
   Route,
+  Routes,
+  Navigate,
   Link,
   Outlet,
 } from "react-router-dom";
+import { useSelector } from "react-redux";
 import MainPage from "./pages/MainPage";
 import AuthPage from "./pages/AuthPage";
 import HeaderNavBar from "./components/HeaderNavBar";
@@ -20,6 +23,11 @@ const AppLayout = () => {
     </>
   );
 };
+
+function App() {
+  const authToken = useSelector((state) => state.auth.token);
+  return <RouterProvider router={router} />;
+}
 
 const router = createBrowserRouter([
   {
@@ -36,9 +44,5 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
-function App() {
-  return <RouterProvider router={router} />;
-}
 
 export default App;

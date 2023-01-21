@@ -1,9 +1,14 @@
 import { useState, useRef } from "react";
 import classes from "./AuthPage.module.css";
+import { authActions } from "../store/auth-slice";
+import { useDispatch } from "react-redux";
+import { redirect } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
@@ -14,6 +19,7 @@ const AuthPage = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
 
@@ -36,22 +42,33 @@ const AuthPage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
-      setIsLoading(false);
-      if (res.ok) {
-        return res.json();
-      } else {
-        res.json().then((data) => {
-          let errorMessage = "Authentication failed!";
-          throw new Error(errorMessage);
-        });
-      }
-    });
+    })
+      .then((res) => {
+        setIsLoading(false);
+        if (res.ok) {
+          return res.json();
+        } else {
+          res.json().then((data) => {
+            let errorMessage = "Authentication failed!";
+            throw new Error(errorMessage);
+          });
+        }
+      })
+      .then((data) => {
+        if (isLogin) {
+          dispatch(
+            authActions.setToken({
+              token: data.idToken,
+            })
+          );
+        }
+        redirect("/");
+      });
   };
 
   return (
     <div className={classes.authContainer}>
-      <form onSubmit={submitHandler} className={classes.authForm}>
+      <form className={classes.authForm}>
         <h1>{isLogin ? "Sign In" : "Sign Up"}</h1>
         <label for="E-mail" className={classes.label}>
           E-mail
@@ -73,11 +90,22 @@ const AuthPage = () => {
           required
           ref={passwordInputRef}
         />
-        <input
-          type="submit"
-          value={isLogin ? "Sign In" : "Sign Up"}
-          className={classes.submit}
-        />
+        <div className={classes.submit} onClick={submitHandler}>
+          {!isLoading ? (
+            "Submit"
+          ) : (
+            <ThreeDots
+              height="40"
+              width="40"
+              radius="9"
+              color="orange"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          )}
+        </div>
         <button className={classes.changeBtn} onClick={changeModeHandler}>
           {isLogin
             ? "You dont have an account? Sign Up!"
